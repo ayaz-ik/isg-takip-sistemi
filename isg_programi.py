@@ -4,7 +4,52 @@ from datetime import date
 import os
 import random
 
+
 # --- SAYFA AYARLARI ---
+st.set_page_config(page_title="İSG Portal | Yetkili Girişi", layout="centered")
+
+# --- 1. AŞAMA: OTURUM KONTROLÜ ---
+if "oturum_acildi" not in st.session_state:
+    st.session_state["oturum_acildi"] = False
+
+# --- GİRİŞ SAYFASI (1. SAYFA) ---
+if not st.session_state["oturum_acildi"]:
+    st.title("🛡️ İSG Takip Sistemi")
+    st.subheader("Lütfen Yetkili Bilgilerinizi Giriniz")
+    
+    with st.form("login_formu"):
+        kullanici = st.text_input("Kullanıcı Adı")
+        sifre = st.text_input("Şifre", type="password")
+        giris_butonu = st.form_submit_button("Sisteme Giriş Yap")
+
+        if giris_butonu:
+            # Buradaki bilgileri kendine göre değiştirebilirsin
+            if kullanici == "admin" and sifre == "IK_Lideri_2026":
+                st.session_state["oturum_acildi"] = True
+                st.success("Giriş Başarılı! Yönlendiriliyorsunuz...")
+                st.rerun()
+            else:
+                st.error("Kullanıcı adı veya şifre hatalı!")
+    
+    # Durdurucu: Eğer giriş yapılmadıysa aşağıdaki kodlara ASLA geçme
+    st.stop()
+
+# --- 2. AŞAMA: ANA PANEL (2. SAYFA) ---
+# Giriş yapıldıysa sayfa düzenini genişletelim
+st.set_page_config(layout="wide") 
+
+# Yan Menü (Sidebar)
+st.sidebar.title("Yönetim Paneli")
+st.sidebar.info(f"Kullanıcı: Admin")
+if st.sidebar.button("Güvenli Çıkış"):
+    st.session_state["oturum_acildi"] = False
+    st.rerun()
+
+st.title("🛡️ İSG Eğitim Takip Platformu")
+
+# --- BURADAN SONRASI ESKİDEN YAZDIĞIMIZ ANALİZ VE VERİ KODLARI ---
+# (Tablar, Tablolar, Personel Ekleme ve Excel Yükleme kodlarını buraya yapıştırabilirsin)
+st.write("Hoş geldiniz! Artık tüm verilere erişebilirsiniz.")
 st.set_page_config(page_title="İSG Eğitim Takip Sistemi", layout="wide")
 
 # --- SABİT DEĞERLER (Kurallar ve Tanımlar) ---
@@ -117,4 +162,4 @@ with tab2:
                 df.to_csv(VERI_DOSYASI, index=False)
                 st.success("Kayıt Başarıyla Eklendi! Lütfen listeyi güncellemek için sayfayı yenileyin.")
             else:
-                st.error("Sicil No ve Ad Soyad alanları boş bırakılamaz!")
+                st.error("Sicil No ve Ad Soyad alanları boş bırakılamaz!")      
